@@ -15,7 +15,7 @@ pub fn capture_moves(board: &Board) -> Vec<Move> {
     let enemy_pieces = board.colors(!board.side_to_move());
     let mut captures_list: Vec<Move> = Vec::new();
 
-    // Assigns ep_square to the square that can be attacked
+    // EP file
     let ep = board.en_passant();
     let mut ep_square: Option<Square> = None;
 
