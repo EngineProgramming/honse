@@ -1,4 +1,4 @@
-use crate::uci::position;
+use crate::uci::{position, ucinewgame};
 
 pub fn listen() {
     println!("id name Honse");
@@ -18,6 +18,7 @@ pub fn listen() {
         let mut stream = input.split_ascii_whitespace();
 
         match stream.next().unwrap_or("") {
+            "ucinewgame" => ucinewgame::ucinewgame(&mut board),
             "position" => position::position(&mut stream, &mut board),
             "quit" => break,
             _ => {}
