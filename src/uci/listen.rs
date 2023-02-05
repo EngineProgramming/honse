@@ -1,7 +1,11 @@
+use crate::uci::position;
+
 pub fn listen() {
     println!("id name Honse");
     println!("id author EPD");
     println!("uciok");
+
+    let mut board = cozy_chess::Board::startpos();
 
     loop {
         let mut input = String::new();
@@ -13,8 +17,10 @@ pub fn listen() {
 
         let mut stream = input.split_ascii_whitespace();
 
-        if stream.next().unwrap_or("") == "quit" {
-            break;
+        match stream.next().unwrap_or("") {
+            "position" => position::position(&mut stream, &mut board),
+            "quit" => break,
+            _ => {}
         }
     }
 }

@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 pub fn parse_move(
     board: &cozy_chess::Board,
     movestr: &str,
