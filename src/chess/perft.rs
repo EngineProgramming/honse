@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 pub fn perft(board: &cozy_chess::Board, depth: u8) -> u64 {
     if depth == 0 {
         1
