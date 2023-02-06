@@ -1,6 +1,15 @@
-mod movegen;
+use std::io;
+mod chess;
+mod uci;
 
-fn main() {
-    let board = cozy_chess::Board::default();
-    println!("{board}");
+fn main() -> io::Result<()> {
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input)?;
+
+    match input.as_str().trim() {
+        "uci" => crate::uci::listen::listen(),
+        _ => println!("Unknown protocol"),
+    };
+
+    Ok(())
 }
