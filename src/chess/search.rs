@@ -1,12 +1,12 @@
 use crate::chess::constants::{MAX_PLY, NEG_INF};
 use crate::chess::eval::eval;
-use crate::chess::move_gen;
+use crate::chess::move_gen::all_moves;
 use crate::chess::pv_table::PVTable;
 use cozy_chess::{Board, Move};
 
-struct Search {
-    nodes: u64,
-    pv_table: PVTable,
+pub struct Search {
+    pub nodes: u64,
+    pub pv_table: PVTable,
 }
 
 impl Search {
@@ -26,10 +26,10 @@ impl Search {
             return eval(board);
         }
 
-        let mut best_move: Option<Move> = None;
+        self.pv_table.pv_length[ply as usize] = ply;
         let mut best_score = NEG_INF;
 
-        for mv in move_gen::all_moves(board) {
+        for mv in all_moves(board) {
             let mut new_board = board.clone();
             new_board.play_unchecked(mv);
 
