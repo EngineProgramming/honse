@@ -14,20 +14,23 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, &'static
     let mut infinite = None;
 
     loop {
-        match (stream.next(), stream.next()) {
-            (Some("wtime"), Some(n)) => wtime = n.parse::<u32>().ok(),
-            (Some("btime"), Some(n)) => btime = n.parse::<u32>().ok(),
-            (Some("winc"), Some(n)) => winc = n.parse::<u32>().ok(),
-            (Some("binc"), Some(n)) => binc = n.parse::<u32>().ok(),
-            (Some("movestogo"), Some(n)) => movestogo = n.parse::<u32>().ok(),
-            (Some("depth"), Some(n)) => depth = n.parse::<u8>().ok(),
-            (Some("nodes"), Some(n)) => nodes = n.parse::<u64>().ok(),
-            (Some("movetime"), Some(n)) => movetime = n.parse::<u32>().ok(),
-            (Some("infinite"), _) => infinite = Some(true),
-            (Some(_), _) => {
+        match (
+            stream.next().unwrap_or_default(),
+            stream.next().unwrap_or_default(),
+        ) {
+            ("wtime", n) => wtime = n.parse::<u32>().ok(),
+            ("btime", n) => btime = n.parse::<u32>().ok(),
+            ("winc", n) => winc = n.parse::<u32>().ok(),
+            ("binc", n) => binc = n.parse::<u32>().ok(),
+            ("movestogo", n) => movestogo = n.parse::<u32>().ok(),
+            ("depth", n) => depth = n.parse::<u8>().ok(),
+            ("nodes", n) => nodes = n.parse::<u64>().ok(),
+            ("movetime", n) => movetime = n.parse::<u32>().ok(),
+            ("infinite", _) => infinite = Some(true),
+            ("", _) => break,
+            (_, _) => {
                 return Err("Uh oh");
             }
-            _ => break,
         }
     }
 
