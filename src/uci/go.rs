@@ -51,9 +51,7 @@ pub fn go(stream: &mut SplitAsciiWhitespace, board: &mut cozy_chess::Board) {
 
     let mut legal_moves = vec![];
     board.generate_moves(|moves| {
-        for mv in moves {
-            legal_moves.push(mv);
-        }
+        legal_moves.extend(moves);
         false
     });
 
