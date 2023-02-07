@@ -1,5 +1,6 @@
 use std::io;
 mod chess;
+mod search;
 mod uci;
 
 fn main() -> io::Result<()> {
