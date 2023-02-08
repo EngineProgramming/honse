@@ -47,7 +47,10 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, &'static
 }
 
 pub fn go(stream: &mut SplitAsciiWhitespace, board: &mut cozy_chess::Board) {
-    let _opts = parse_go(stream);
+    let opts = parse_go(stream);
+    if opts.is_err() {
+        return;
+    }
 
     let mut legal_moves = vec![];
     board.generate_moves(|moves| {
