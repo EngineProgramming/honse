@@ -28,9 +28,7 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, &'static
             ("movetime", n) => movetime = n.parse::<u32>().ok(),
             ("infinite", _) => infinite = Some(true),
             ("", _) => break,
-            (_, _) => {
-                return Err("Uh oh");
-            }
+            (_, _) => return Err("Uh oh"),
         }
     }
 
