@@ -33,11 +33,8 @@ impl Search {
         for mv in moves {
             let mut new_board = board.clone();
             new_board.play_unchecked(mv);
-
             self.nodes += 1;
-
             let score = -self.search(&new_board, depth - 1, ply + 1);
-
             if score > best_score {
                 best_score = score;
                 self.pv_table.store(ply, mv);

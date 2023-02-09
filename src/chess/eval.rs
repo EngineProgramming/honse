@@ -1,7 +1,4 @@
-use std::arch::x86_64::_popcnt32;
-
 use cozy_chess::{Board, Color, Piece};
-
 const PIECE_VALUES: [i16; 6] = [100, 320, 330, 500, 900, 0];
 
 fn piece_type(piece: Piece) -> usize {
