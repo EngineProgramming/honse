@@ -2,37 +2,41 @@ use crate::chess::constants::MAX_PLY;
 use cozy_chess::Move;
 
 pub struct PVTable {
-    pub pv_length: [i16; MAX_PLY as usize],
-    pub pv_table: [[Option<Move>; MAX_PLY as usize]; MAX_PLY as usize],
+    pub length: [u8; MAX_PLY as usize],
+    pub table: [[Option<Move>; MAX_PLY as usize]; MAX_PLY as usize],
 }
 
 impl PVTable {
     pub fn new() -> Self {
         PVTable {
-            pv_length: [0; MAX_PLY as usize],
-            pv_table: [[None; MAX_PLY as usize]; MAX_PLY as usize],
+            length: [0; MAX_PLY as usize],
+            table: [[None; MAX_PLY as usize]; MAX_PLY as usize],
         }
     }
 
-    pub fn store_pv(&mut self, ply: i16, mv: Move) {
+    pub fn store(&mut self, ply: u8, mv: Move) {
+        // Write to PV table
         let uply = ply as usize;
-        self.pv_table[uply][uply] = Some(mv);
+        self.table[uply][uply] = Some(mv);
 
-        for i in (uply + 1)..self.pv_length[uply + 1] as usize {
-            self.pv_table[uply][i] = self.pv_table[uply + 1][i];
+        // Loop over the next ply
+        for i in (uply + 1)..self.length[uply + 1] as usize {
+            // Copy move from deeper ply into current line
+            self.table[uply][i] = self.table[uply + 1][i];
         }
 
-        self.pv_length[uply] = self.pv_length[uply + 1];
+        // Update PV length
+        self.length[uply] = self.length[uply + 1];
     }
 
-    pub fn parse(&self) -> String {
+    pub fn pv_string(&self) -> String {
         let mut pv = String::new();
-        for i in 0..self.pv_length[0] {
-            if self.pv_table[0][i as usize].is_none() {
+        for i in 0..self.length[0] {
+            if self.table[0][i as usize].is_none() {
                 break;
             }
             pv.push(' ');
-            pv.push_str(&self.pv_table[0][i as usize].unwrap().to_string());
+            pv.push_str(&self.table[0][i as usize].unwrap().to_string());
         }
 
         pv

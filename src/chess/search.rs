@@ -1,8 +1,8 @@
-use crate::chess::constants::{MAX_PLY, NEG_INF};
+use crate::chess::constants::{INFINITY, MAX_PLY};
 use crate::chess::eval::eval;
 use crate::chess::move_gen::all_moves;
 use crate::chess::pv_table::PVTable;
-use cozy_chess::{Board, Move};
+use cozy_chess::Board;
 
 pub struct Search {
     pub nodes: u64,
@@ -17,7 +17,7 @@ impl Search {
         }
     }
 
-    pub fn search(&mut self, board: &Board, depth: u8, ply: i16) -> i16 {
+    pub fn search(&mut self, board: &Board, depth: u8, ply: u8) -> i16 {
         if ply >= MAX_PLY {
             return eval(board);
         }
@@ -26,10 +26,11 @@ impl Search {
             return eval(board);
         }
 
-        self.pv_table.pv_length[ply as usize] = ply;
-        let mut best_score = NEG_INF;
+        self.pv_table.length[ply as usize] = ply;
+        let mut best_score = -INFINITY;
+        let moves = all_moves(board);
 
-        for mv in all_moves(board) {
+        for mv in moves {
             let mut new_board = board.clone();
             new_board.play_unchecked(mv);
 
@@ -39,7 +40,7 @@ impl Search {
 
             if score > best_score {
                 best_score = score;
-                self.pv_table.store_pv(ply, mv);
+                self.pv_table.store(ply, mv);
             }
         }
 

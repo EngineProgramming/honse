@@ -1,3 +1,5 @@
+use std::arch::x86_64::_popcnt32;
+
 use cozy_chess::{Board, Color, Piece};
 
 const PIECE_VALUES: [i16; 6] = [100, 320, 330, 500, 900, 0];
@@ -14,30 +16,36 @@ fn piece_type(piece: Piece) -> usize {
 }
 
 pub fn eval(board: &Board) -> i16 {
-    let mut white_score = 0;
-    let mut black_score = 0;
+    let mut score = 0;
 
-    // Loops through each piece type
-    for pt in Piece::ALL {
-        // Loops through each square containing a piece of the current type
-        for square in board.pieces(pt) {
-            let piece = board.piece_on(square).unwrap();
-            let color = board.color_on(square).unwrap();
+    for piece in Piece::ALL {
+        score += PIECE_VALUES[piece_type(piece)]
+            * board.colored_pieces(Color::White, piece).len() as i16;
 
-            match color {
-                Color::White => {
-                    white_score += PIECE_VALUES[piece_type(piece)];
-                }
-                Color::Black => {
-                    black_score += PIECE_VALUES[piece_type(piece)];
-                }
-            }
-        }
+        score -= PIECE_VALUES[piece_type(piece)]
+            * board.colored_pieces(Color::Black, piece).len() as i16;
     }
 
-    if board.side_to_move() == Color::White {
-        white_score - black_score
-    } else {
-        -(white_score - black_score)
+    match board.side_to_move() {
+        Color::White => score,
+        Color::Black => -score,
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use cozy_chess::Board;
+
+    use super::eval;
+
+    #[test]
+    fn eval_sanity() {
+        let board = Board::from_fen(
+            "rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            false,
+        )
+        .unwrap();
+
+        assert!(eval(&board) > 0)
     }
 }
