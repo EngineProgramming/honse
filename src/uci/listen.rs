@@ -23,6 +23,7 @@ pub fn listen() {
             "perft" => perft::perft(&mut stream, &mut board),
             "split" => split::split(&mut stream, &mut board),
             "go" => go::go(&mut stream, &mut board),
+            "isready" => println!("readyok"),
             "quit" => break,
             _ => {}
         }
