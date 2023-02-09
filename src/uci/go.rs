@@ -110,7 +110,7 @@ mod tests {
 
     #[test]
     fn parse_failure() {
-        let tests: [&str; 11] = [
+        let tests: [&str; 12] = [
             "",
             "test",
             "movetime",
@@ -122,6 +122,7 @@ mod tests {
             "winc 123 binc 456",
             "nodes infinite",
             "movetime 123 nodes 456",
+            "wtime 123.0 btime 456",
         ];
 
         for input in tests {
