@@ -2,7 +2,13 @@ use crate::search::options::SearchOptions;
 use rand::seq::SliceRandom;
 use std::str::SplitAsciiWhitespace;
 
-fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, &'static str> {
+#[derive(Debug)]
+enum SearchOptionsError {
+    UnrecognisedToken,
+    InvalidCombination,
+}
+
+fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, SearchOptionsError> {
     let mut wtime = None;
     let mut btime = None;
     let mut winc = None;
@@ -28,7 +34,7 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, &'static
             ("movetime", n) => movetime = n.parse::<u32>().ok(),
             ("infinite", _) => infinite = Some(true),
             ("", _) => break,
-            (_, _) => return Err("Uh oh"),
+            (_, _) => return Err(SearchOptionsError::UnrecognisedToken),
         }
     }
 
@@ -40,7 +46,7 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, &'static
         (None, None, None, Some(n), None, None) => Ok(SearchOptions::Nodes(n)),
         (None, None, None, None, Some(m), None) => Ok(SearchOptions::Movetime(m)),
         (None, None, None, None, None, Some(_)) => Ok(SearchOptions::Infinite),
-        _ => Err("Uh oh"),
+        _ => Err(SearchOptionsError::InvalidCombination),
     }
 }
 
@@ -102,9 +108,9 @@ mod tests {
         for (input, result) in tests {
             println!("{input}");
             let mut stream = input.split_ascii_whitespace();
-            let gg = parse_go(&mut stream);
-            assert!(gg.is_ok());
-            assert_eq!(gg.unwrap(), result);
+            let options = parse_go(&mut stream);
+            assert!(options.is_ok());
+            assert_eq!(options.unwrap(), result);
         }
     }
 
