@@ -1,4 +1,4 @@
-use crate::uci::{perft, position, split, ucinewgame};
+use crate::uci::{go, perft, position, split, ucinewgame};
 
 pub fn listen() {
     println!("id name Honse");
@@ -22,6 +22,8 @@ pub fn listen() {
             "position" => position::position(&mut stream, &mut board),
             "perft" => perft::perft(&mut stream, &mut board),
             "split" => split::split(&mut stream, &mut board),
+            "go" => go::go(&mut stream, &mut board),
+            "isready" => println!("readyok"),
             "quit" => break,
             _ => {}
         }

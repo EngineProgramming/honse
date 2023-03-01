@@ -1,3 +1,4 @@
+pub mod go;
 pub mod listen;
 pub mod perft;
 pub mod position;
