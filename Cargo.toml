@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 cozy-chess = "0.3.1"
+rand = "0.8.5"
