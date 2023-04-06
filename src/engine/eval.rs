@@ -1,26 +1,15 @@
 use cozy_chess::{Board, Color, Piece};
 const PIECE_VALUES: [i16; 6] = [100, 320, 330, 500, 900, 0];
 
-fn piece_type(piece: Piece) -> usize {
-    match piece {
-        Piece::Pawn => 0,
-        Piece::Knight => 1,
-        Piece::Bishop => 2,
-        Piece::Rook => 3,
-        Piece::Queen => 4,
-        Piece::King => 5,
-    }
-}
-
 pub fn eval(board: &Board) -> i16 {
     let mut score = 0;
 
     for piece in Piece::ALL {
-        score += PIECE_VALUES[piece_type(piece)]
-            * board.colored_pieces(Color::White, piece).len() as i16;
+        score +=
+            PIECE_VALUES[piece as usize] * board.colored_pieces(Color::White, piece).len() as i16;
 
-        score -= PIECE_VALUES[piece_type(piece)]
-            * board.colored_pieces(Color::Black, piece).len() as i16;
+        score -=
+            PIECE_VALUES[piece as usize] * board.colored_pieces(Color::Black, piece).len() as i16;
     }
 
     match board.side_to_move() {

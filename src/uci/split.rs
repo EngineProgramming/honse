@@ -13,7 +13,7 @@ pub fn split(stream: &mut SplitAsciiWhitespace, board: &mut cozy_chess::Board) {
         for mv in moves {
             let mut board = board.clone();
             board.play_unchecked(mv);
-            let nodes = crate::chess::perft::perft(&board, depth - 1);
+            let nodes = crate::engine::perft::perft(&board, depth - 1);
             total += nodes;
             println!("{mv} {nodes}");
         }

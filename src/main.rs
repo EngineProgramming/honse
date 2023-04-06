@@ -1,5 +1,5 @@
 use std::io;
-mod chess;
+mod engine;
 mod uci;
 
 fn main() -> io::Result<()> {

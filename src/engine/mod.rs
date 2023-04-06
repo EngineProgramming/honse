@@ -1,4 +1,4 @@
-mod constants;
+mod definitions;
 mod eval;
 mod move_gen;
 pub mod parse_move;
