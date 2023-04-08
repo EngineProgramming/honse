@@ -97,10 +97,15 @@ mod tests {
     }
 
     #[test]
-    fn frc2standard() {
-        let tests: [(Move, &str); 2] = [
+    fn move2string() {
+        let tests: [(Move, &str); 7] = [
             ("e1h1".parse().unwrap(), "e1g1"),
             ("e1a1".parse().unwrap(), "e1c1"),
+            ("e1g1".parse().unwrap(), "e1g1"),
+            ("e1c1".parse().unwrap(), "e1c1"),
+            ("e1e2".parse().unwrap(), "e1e2"),
+            ("e2e4".parse().unwrap(), "e2e4"),
+            ("d8d2".parse().unwrap(), "d8d2"),
         ];
 
         let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();

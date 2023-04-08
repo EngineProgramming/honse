@@ -3,7 +3,7 @@ pub enum SearchOptions {
     Depth(u8),
     Movetime(u32),
     Nodes(u64),
-    //    wt,  bt,       winc,        binc,    movestogo
+    //   wt,  bt,  winc,        binc,        movestogo
     Time(u32, u32, Option<u32>, Option<u32>, Option<u32>),
     Infinite,
 }
