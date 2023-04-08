@@ -1,11 +1,16 @@
-use crate::uci::{go, perft, position, split, ucinewgame};
+use crate::{
+    search::minimax::Search,
+    uci::{go, perft, position, split, ucinewgame},
+};
+use cozy_chess::Board;
 
 pub fn listen() {
     println!("id name Honse");
     println!("id author EPD");
     println!("uciok");
 
-    let mut board = cozy_chess::Board::startpos();
+    let mut board = Board::default();
+    let mut search = Search::new();
 
     loop {
         let mut input = String::new();
@@ -22,7 +27,7 @@ pub fn listen() {
             "position" => position::position(&mut stream, &mut board),
             "perft" => perft::perft(&mut stream, &mut board),
             "split" => split::split(&mut stream, &mut board),
-            "go" => go::go(&mut stream, &mut board),
+            "go" => go::go(&mut stream, &mut search, &board),
             "isready" => println!("readyok"),
             "quit" => break,
             _ => {}

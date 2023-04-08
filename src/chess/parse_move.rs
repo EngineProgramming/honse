@@ -1,6 +1,6 @@
 use cozy_chess::{Board, Move, MoveParseError, Piece, Square};
 
-pub fn uci_to_cozymove(board: &Board, movestr: &str) -> Result<Move, MoveParseError> {
+pub fn uci_to_move(board: &Board, movestr: &str) -> Result<Move, MoveParseError> {
     let mut mv: Move = movestr.parse()?;
 
     if board.piece_on(mv.from) == Some(Piece::King) && board.piece_on(mv.to) != Some(Piece::Rook) {
@@ -16,7 +16,7 @@ pub fn uci_to_cozymove(board: &Board, movestr: &str) -> Result<Move, MoveParseEr
     Ok(mv)
 }
 
-pub fn cozymove_to_uci(board: &Board, mut mv: Move) -> Move {
+pub fn move_to_uci(board: &Board, mut mv: Move) -> Move {
     if board.piece_on(mv.from) == Some(Piece::King) {
         mv.to = match (mv.from, mv.to) {
             (Square::E1, Square::H1) => Square::G1,
@@ -32,9 +32,8 @@ pub fn cozymove_to_uci(board: &Board, mut mv: Move) -> Move {
 
 #[cfg(test)]
 mod tests {
-    use crate::engine::parse_move::cozymove_to_uci;
-
-    use super::uci_to_cozymove;
+    use super::uci_to_move;
+    use crate::chess::parse_move::move_to_uci;
     use cozy_chess::{Board, Move};
 
     #[test]
@@ -50,7 +49,7 @@ mod tests {
         let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            if let Ok(mv) = uci_to_cozymove(&board, before) {
+            if let Ok(mv) = uci_to_move(&board, before) {
                 assert_eq!(format!("{mv}"), after);
                 assert!(board.is_legal(mv));
             } else {
@@ -72,7 +71,7 @@ mod tests {
         let board: Board = "r3k2r/8/8/8/8/8/8/4K3 b kq - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            if let Ok(mv) = uci_to_cozymove(&board, before) {
+            if let Ok(mv) = uci_to_move(&board, before) {
                 assert_eq!(format!("{mv}"), after);
                 assert!(board.is_legal(mv));
             } else {
@@ -88,7 +87,7 @@ mod tests {
         let board: Board = "4k3/8/8/8/8/8/8/1R2K1R1 w GB - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            if let Ok(mv) = uci_to_cozymove(&board, before) {
+            if let Ok(mv) = uci_to_move(&board, before) {
                 assert_eq!(format!("{mv}"), after);
                 assert!(board.is_legal(mv));
             } else {
@@ -113,7 +112,7 @@ mod tests {
         let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            assert_eq!(cozymove_to_uci(&board, before), after);
+            assert_eq!(move_to_uci(&board, before), after);
         }
     }
 }

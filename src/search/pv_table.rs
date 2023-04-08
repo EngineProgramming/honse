@@ -1,5 +1,5 @@
 use super::definitions::MAX_PLY;
-use super::parse_move::cozymove_to_uci;
+use crate::chess::parse_move::move_to_uci;
 use cozy_chess::{Board, Move};
 
 pub struct PVTable {
@@ -18,7 +18,7 @@ impl PVTable {
     // Converts the internal cozy-chess move to a UCI compliant move,
     // puts the move first and copies the old content behind the new move.
     pub fn store(&mut self, board: &Board, mv: Move, old: &Self) {
-        let mv = cozymove_to_uci(&board, mv);
+        let mv = move_to_uci(&board, mv);
         self.table[0] = Some(mv);
         self.table[1..=old.length].copy_from_slice(&old.table[..old.length]);
         self.length = old.length + 1;

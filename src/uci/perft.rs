@@ -10,7 +10,7 @@ pub fn perft(stream: &mut SplitAsciiWhitespace, board: &mut cozy_chess::Board) {
 
     for i in 1..=depth {
         let start = Instant::now();
-        let nodes = crate::engine::perft::perft(board, i);
+        let nodes = crate::chess::perft::perft(board, i);
         let duration = start.elapsed();
         let nps = nodes as f64 / duration.as_secs_f64();
         println!(
