@@ -1,5 +1,5 @@
 #[derive(PartialEq, Debug, Copy, Clone)]
-pub enum SearchOption {
+pub enum SearchOptions {
     Depth(u8),
     Movetime(u32),
     Nodes(u64),

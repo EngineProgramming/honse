@@ -1,14 +1,14 @@
-use crate::search::{minimax::Search, options::SearchOption};
+use crate::search::{minimax::Search, options::SearchOptions};
 use cozy_chess::Board;
 use std::str::SplitAsciiWhitespace;
 
 #[derive(Debug)]
-enum SearchOptionError {
+enum SearchOptionsError {
     UnrecognisedToken,
     InvalidCombination,
 }
 
-fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOption, SearchOptionError> {
+fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, SearchOptionsError> {
     let mut wtime = None;
     let mut btime = None;
     let mut winc = None;
@@ -34,19 +34,19 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOption, SearchOpt
             ("movetime", n) => movetime = n.parse::<u32>().ok(),
             ("infinite", _) => infinite = Some(true),
             ("", _) => break,
-            (_, _) => return Err(SearchOptionError::UnrecognisedToken),
+            (_, _) => return Err(SearchOptionsError::UnrecognisedToken),
         }
     }
 
     match (wtime, btime, depth, nodes, movetime, infinite) {
         (Some(wt), Some(bt), None, None, None, None) => {
-            Ok(SearchOption::Time(wt, bt, winc, binc, movestogo))
+            Ok(SearchOptions::Time(wt, bt, winc, binc, movestogo))
         }
-        (None, None, Some(d), None, None, None) => Ok(SearchOption::Depth(d)),
-        (None, None, None, Some(n), None, None) => Ok(SearchOption::Nodes(n)),
-        (None, None, None, None, Some(m), None) => Ok(SearchOption::Movetime(m)),
-        (None, None, None, None, None, Some(_)) => Ok(SearchOption::Infinite),
-        _ => Err(SearchOptionError::InvalidCombination),
+        (None, None, Some(d), None, None, None) => Ok(SearchOptions::Depth(d)),
+        (None, None, None, Some(n), None, None) => Ok(SearchOptions::Nodes(n)),
+        (None, None, None, None, Some(m), None) => Ok(SearchOptions::Movetime(m)),
+        (None, None, None, None, None, Some(_)) => Ok(SearchOptions::Infinite),
+        _ => Err(SearchOptionsError::InvalidCombination),
     }
 }
 
@@ -54,7 +54,7 @@ pub fn go(stream: &mut SplitAsciiWhitespace, search: &mut Search, board: &Board)
     let opts = parse_go(stream);
 
     if let Ok(opts) = opts {
-        search.iterative_deepening(board, opts);
+        search.iterative_deepening(board, opts, false);
         search.reset();
     }
 }
@@ -65,35 +65,35 @@ mod tests {
 
     #[test]
     fn parse_success() {
-        let tests: [(&str, SearchOption); 10] = [
+        let tests: [(&str, SearchOptions); 10] = [
             (
                 "wtime 123 btime 456",
-                SearchOption::Time(123, 456, None, None, None),
+                SearchOptions::Time(123, 456, None, None, None),
             ),
             (
                 "btime 123 wtime 456",
-                SearchOption::Time(456, 123, None, None, None),
+                SearchOptions::Time(456, 123, None, None, None),
             ),
             (
                 "wtime 123 btime 456 winc 4",
-                SearchOption::Time(123, 456, Some(4), None, None),
+                SearchOptions::Time(123, 456, Some(4), None, None),
             ),
             (
                 "wtime 123 btime 456 binc 5",
-                SearchOption::Time(123, 456, None, Some(5), None),
+                SearchOptions::Time(123, 456, None, Some(5), None),
             ),
             (
                 "wtime 123 btime 456 movestogo 6",
-                SearchOption::Time(123, 456, None, None, Some(6)),
+                SearchOptions::Time(123, 456, None, None, Some(6)),
             ),
             (
                 "movestogo 6 btime 456 winc 7 wtime 123",
-                SearchOption::Time(123, 456, Some(7), None, Some(6)),
+                SearchOptions::Time(123, 456, Some(7), None, Some(6)),
             ),
-            ("movetime 123", SearchOption::Movetime(123)),
-            ("nodes 123", SearchOption::Nodes(123)),
-            ("depth 123", SearchOption::Depth(123)),
-            ("infinite", SearchOption::Infinite),
+            ("movetime 123", SearchOptions::Movetime(123)),
+            ("nodes 123", SearchOptions::Nodes(123)),
+            ("depth 123", SearchOptions::Depth(123)),
+            ("infinite", SearchOptions::Infinite),
         ];
 
         for (input, result) in tests {

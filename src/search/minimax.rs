@@ -1,7 +1,7 @@
 use super::{
     definitions::{INFINITY, MAX_PLY},
     eval::eval,
-    options::SearchOption,
+    options::SearchOptions,
     pv_table::PVTable,
 };
 use crate::chess::move_gen;
@@ -82,7 +82,7 @@ impl Search {
             }
             // New best move
             alpha = score;
-            pv.store(board, mv, &old_pv);
+            pv.store(mv, &old_pv);
 
             // Fail-high
             if alpha >= beta {
@@ -93,8 +93,8 @@ impl Search {
         best_score
     }
 
-    pub fn timeman(option: SearchOption, board: &Board) -> u32 {
-        if let SearchOption::Time(wtime, btime, _, _, _) = option {
+    pub fn timeman(option: SearchOptions, board: &Board) -> u32 {
+        if let SearchOptions::Time(wtime, btime, _, _, _) = option {
             match board.side_to_move() {
                 Color::White => wtime / 10,
                 Color::Black => btime / 10,
@@ -104,49 +104,49 @@ impl Search {
         }
     }
 
-    pub fn iterative_deepening(&mut self, board: &Board, option: SearchOption) {
+    pub fn iterative_deepening(&mut self, board: &Board, option: SearchOptions, frc: bool) {
         let mut pv = PVTable::new();
         let mut best_move: Option<Move> = None;
         let info_timer = Instant::now();
 
         let depth = match option {
-            SearchOption::Depth(depth) => depth,
-            SearchOption::Time(_, _, _, _, _) => {
+            SearchOptions::Depth(depth) => depth,
+            SearchOptions::Time(_, _, _, _, _) => {
                 self.start_timer = Some(Instant::now());
                 self.stop_time = Some(Search::timeman(option, board));
                 MAX_PLY
             }
-            SearchOption::Movetime(t) => {
+            SearchOptions::Movetime(t) => {
                 self.start_timer = Some(Instant::now());
                 self.stop_time = Some(t);
                 MAX_PLY
             }
-            SearchOption::Infinite | SearchOption::Nodes(_) => MAX_PLY,
+            SearchOptions::Infinite | SearchOptions::Nodes(_) => MAX_PLY,
         };
 
         for d in 1..=depth {
             let score = self.ab_search(-INFINITY, INFINITY, board, d, 0, &mut pv);
 
-            // Always clear at least depth 1, otherwise
-            // we might not have a best move
+            // Always clear at least depth 1
+            // otherwise we might not have a best move
             if self.stop_flag && d > 1 {
                 break;
             }
 
             let elapsed = info_timer.elapsed().as_millis() as u64;
             println!(
-                "info depth {} score cp {} nodes {} nps {} time {} pv{}",
+                "info depth {} score cp {} nodes {} nps {} time {} pv {}",
                 d,
                 score,
                 self.nodes,
                 self.nodes / (elapsed / 1000).max(1),
                 elapsed,
-                pv.pv_string()
+                pv.to_string(board, frc)
             );
 
             best_move = pv.table[0];
 
-            if let SearchOption::Nodes(n) = option {
+            if let SearchOptions::Nodes(n) = option {
                 if self.nodes >= n {
                     break;
                 }

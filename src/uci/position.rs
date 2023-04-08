@@ -18,7 +18,7 @@ pub fn position(stream: &mut SplitAsciiWhitespace, board: &mut cozy_chess::Board
 
     // Parse moves
     for x in stream.by_ref() {
-        match crate::chess::parse_move::uci_to_move(board, x) {
+        match crate::chess::parse_move::parse_move(board, x) {
             Ok(mv) => board.play(mv),
             _ => break,
         }

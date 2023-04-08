@@ -1,6 +1,6 @@
 use cozy_chess::{Board, Move, MoveParseError, Piece, Square};
 
-pub fn uci_to_move(board: &Board, movestr: &str) -> Result<Move, MoveParseError> {
+pub fn parse_move(board: &Board, movestr: &str) -> Result<Move, MoveParseError> {
     let mut mv: Move = movestr.parse()?;
 
     if board.piece_on(mv.from) == Some(Piece::King) && board.piece_on(mv.to) != Some(Piece::Rook) {
@@ -16,24 +16,24 @@ pub fn uci_to_move(board: &Board, movestr: &str) -> Result<Move, MoveParseError>
     Ok(mv)
 }
 
-pub fn move_to_uci(board: &Board, mut mv: Move) -> Move {
+pub fn move_to_string(board: &Board, mv: Move) -> String {
     if board.piece_on(mv.from) == Some(Piece::King) {
-        mv.to = match (mv.from, mv.to) {
-            (Square::E1, Square::H1) => Square::G1,
-            (Square::E8, Square::H8) => Square::G8,
-            (Square::E1, Square::A1) => Square::C1,
-            (Square::E8, Square::A8) => Square::C8,
-            _ => mv.to,
+        return match (mv.from, mv.to) {
+            (Square::E1, Square::H1) => String::from("e1g1"),
+            (Square::E8, Square::H8) => String::from("e8g8"),
+            (Square::E1, Square::A1) => String::from("e1c1"),
+            (Square::E8, Square::A8) => String::from("e8c8"),
+            _ => mv.to_string(),
         };
     }
 
-    mv
+    mv.to_string()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::uci_to_move;
-    use crate::chess::parse_move::move_to_uci;
+    use super::parse_move;
+    use crate::chess::parse_move::move_to_string;
     use cozy_chess::{Board, Move};
 
     #[test]
@@ -49,7 +49,7 @@ mod tests {
         let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            if let Ok(mv) = uci_to_move(&board, before) {
+            if let Ok(mv) = parse_move(&board, before) {
                 assert_eq!(format!("{mv}"), after);
                 assert!(board.is_legal(mv));
             } else {
@@ -71,7 +71,7 @@ mod tests {
         let board: Board = "r3k2r/8/8/8/8/8/8/4K3 b kq - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            if let Ok(mv) = uci_to_move(&board, before) {
+            if let Ok(mv) = parse_move(&board, before) {
                 assert_eq!(format!("{mv}"), after);
                 assert!(board.is_legal(mv));
             } else {
@@ -87,7 +87,7 @@ mod tests {
         let board: Board = "4k3/8/8/8/8/8/8/1R2K1R1 w GB - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            if let Ok(mv) = uci_to_move(&board, before) {
+            if let Ok(mv) = parse_move(&board, before) {
                 assert_eq!(format!("{mv}"), after);
                 assert!(board.is_legal(mv));
             } else {
@@ -97,22 +97,16 @@ mod tests {
     }
 
     #[test]
-    fn parse_cozy() {
-        let tests: [(Move, Move); 2] = [
-            (
-                "e1h1".parse::<Move>().unwrap(),
-                "e1g1".parse::<Move>().unwrap(),
-            ),
-            (
-                "e1a1".parse::<Move>().unwrap(),
-                "e1c1".parse::<Move>().unwrap(),
-            ),
+    fn frc2standard() {
+        let tests: [(Move, &str); 2] = [
+            ("e1h1".parse().unwrap(), "e1g1"),
+            ("e1a1".parse().unwrap(), "e1c1"),
         ];
 
         let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
 
         for (before, after) in tests {
-            assert_eq!(move_to_uci(&board, before), after);
+            assert_eq!(move_to_string(&board, before), after);
         }
     }
 }
