@@ -1,17 +1,14 @@
-pub fn parse_move(
-    board: &cozy_chess::Board,
-    movestr: &str,
-) -> Result<cozy_chess::Move, cozy_chess::MoveParseError> {
-    let mut mv: cozy_chess::Move = movestr.parse()?;
+use cozy_chess::{Board, Move, MoveParseError, Piece, Square};
 
-    if board.piece_on(mv.from) == Some(cozy_chess::Piece::King)
-        && board.piece_on(mv.to) != Some(cozy_chess::Piece::Rook)
-    {
+pub fn parse_move(board: &Board, movestr: &str) -> Result<Move, MoveParseError> {
+    let mut mv: Move = movestr.parse()?;
+
+    if board.piece_on(mv.from) == Some(Piece::King) && board.piece_on(mv.to) != Some(Piece::Rook) {
         mv.to = match (mv.from, mv.to) {
-            (cozy_chess::Square::E1, cozy_chess::Square::G1) => cozy_chess::Square::H1,
-            (cozy_chess::Square::E8, cozy_chess::Square::G8) => cozy_chess::Square::H8,
-            (cozy_chess::Square::E1, cozy_chess::Square::C1) => cozy_chess::Square::A1,
-            (cozy_chess::Square::E8, cozy_chess::Square::C8) => cozy_chess::Square::A8,
+            (Square::E1, Square::G1) => Square::H1,
+            (Square::E8, Square::G8) => Square::H8,
+            (Square::E1, Square::C1) => Square::A1,
+            (Square::E8, Square::C8) => Square::A8,
             _ => mv.to,
         };
     }
@@ -19,9 +16,25 @@ pub fn parse_move(
     Ok(mv)
 }
 
+pub fn move_to_string(board: &Board, mv: Move) -> String {
+    if board.piece_on(mv.from) == Some(Piece::King) {
+        return match (mv.from, mv.to) {
+            (Square::E1, Square::H1) => String::from("e1g1"),
+            (Square::E8, Square::H8) => String::from("e8g8"),
+            (Square::E1, Square::A1) => String::from("e1c1"),
+            (Square::E8, Square::A8) => String::from("e8c8"),
+            _ => mv.to_string(),
+        };
+    }
+
+    mv.to_string()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::parse_move;
+    use crate::chess::parse_move::move_to_string;
+    use cozy_chess::{Board, Move};
 
     #[test]
     fn parse_white() {
@@ -33,7 +46,7 @@ mod tests {
             ("e1e2", "e1e2"),
         ];
 
-        let board: cozy_chess::Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
+        let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
 
         for (before, after) in tests {
             if let Ok(mv) = parse_move(&board, before) {
@@ -55,7 +68,7 @@ mod tests {
             ("e8e7", "e8e7"),
         ];
 
-        let board: cozy_chess::Board = "r3k2r/8/8/8/8/8/8/4K3 b kq - 0 1".parse().unwrap();
+        let board: Board = "r3k2r/8/8/8/8/8/8/4K3 b kq - 0 1".parse().unwrap();
 
         for (before, after) in tests {
             if let Ok(mv) = parse_move(&board, before) {
@@ -71,7 +84,7 @@ mod tests {
     fn parse_960() {
         let tests: [(&str, &str); 2] = [("e1g1", "e1g1"), ("e1e2", "e1e2")];
 
-        let board: cozy_chess::Board = "4k3/8/8/8/8/8/8/1R2K1R1 w GB - 0 1".parse().unwrap();
+        let board: Board = "4k3/8/8/8/8/8/8/1R2K1R1 w GB - 0 1".parse().unwrap();
 
         for (before, after) in tests {
             if let Ok(mv) = parse_move(&board, before) {
@@ -80,6 +93,27 @@ mod tests {
             } else {
                 panic!("Failed to parse move {before}");
             }
+        }
+    }
+
+    #[test]
+    fn move2string() {
+        let tests: [(Move, &str); 9] = [
+            ("e1h1".parse().unwrap(), "e1g1"),
+            ("e1a1".parse().unwrap(), "e1c1"),
+            ("e1g1".parse().unwrap(), "e1g1"),
+            ("e1c1".parse().unwrap(), "e1c1"),
+            ("e1e2".parse().unwrap(), "e1e2"),
+            ("e2e4".parse().unwrap(), "e2e4"),
+            ("d8d2".parse().unwrap(), "d8d2"),
+            ("a7a8q".parse().unwrap(), "a7a8q"),
+            ("b7b8r".parse().unwrap(), "b7b8r"),
+        ];
+
+        let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
+
+        for (before, after) in tests {
+            assert_eq!(move_to_string(&board, before), after);
         }
     }
 }

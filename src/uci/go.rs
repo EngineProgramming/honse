@@ -1,5 +1,8 @@
-use crate::search::options::SearchOptions;
-use rand::seq::SliceRandom;
+use crate::search::{
+    options::SearchOptions,
+    search::{search_root, SearchInfo},
+};
+use cozy_chess::Board;
 use std::str::SplitAsciiWhitespace;
 
 #[derive(Debug)]
@@ -50,21 +53,12 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, SearchOp
     }
 }
 
-pub fn go(stream: &mut SplitAsciiWhitespace, board: &mut cozy_chess::Board) {
+pub fn go(stream: &mut SplitAsciiWhitespace, info: &mut SearchInfo, board: &Board) {
     let opts = parse_go(stream);
-    if opts.is_err() {
-        return;
-    }
 
-    let mut legal_moves = vec![];
-    board.generate_moves(|moves| {
-        legal_moves.extend(moves);
-        false
-    });
-
-    match legal_moves.choose(&mut rand::thread_rng()) {
-        Some(mv) => println!("bestmove {mv}"),
-        _ => println!("bestmove 0000"),
+    if let Ok(opts) = opts {
+        search_root(info, board, opts, false);
+        info.reset();
     }
 }
 
