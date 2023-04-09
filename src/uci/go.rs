@@ -1,4 +1,7 @@
-use crate::search::{minimax::Search, options::SearchOptions};
+use crate::search::{
+    options::SearchOptions,
+    search::{search_root, SearchInfo},
+};
 use cozy_chess::Board;
 use std::str::SplitAsciiWhitespace;
 
@@ -50,12 +53,12 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, SearchOp
     }
 }
 
-pub fn go(stream: &mut SplitAsciiWhitespace, search: &mut Search, board: &Board) {
+pub fn go(stream: &mut SplitAsciiWhitespace, si: &mut SearchInfo, board: &Board) {
     let opts = parse_go(stream);
 
     if let Ok(opts) = opts {
-        search.iterative_deepening(board, opts, false);
-        search.reset();
+        search_root(si, board, opts, false);
+        si.reset();
     }
 }
 

@@ -1,5 +1,5 @@
 use crate::{
-    search::minimax::Search,
+    search::search::SearchInfo,
     uci::{go, perft, position, split, ucinewgame},
 };
 use cozy_chess::Board;
@@ -10,7 +10,7 @@ pub fn listen() {
     println!("uciok");
 
     let mut board = Board::default();
-    let mut search = Search::new();
+    let mut search_info = SearchInfo::new();
 
     loop {
         let mut input = String::new();
@@ -27,7 +27,7 @@ pub fn listen() {
             "position" => position::position(&mut stream, &mut board),
             "perft" => perft::perft(&mut stream, &mut board),
             "split" => split::split(&mut stream, &mut board),
-            "go" => go::go(&mut stream, &mut search, &board),
+            "go" => go::go(&mut stream, &mut search_info, &board),
             "isready" => println!("readyok"),
             "quit" => break,
             _ => {}
