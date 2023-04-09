@@ -53,12 +53,12 @@ fn parse_go(stream: &mut SplitAsciiWhitespace) -> Result<SearchOptions, SearchOp
     }
 }
 
-pub fn go(stream: &mut SplitAsciiWhitespace, si: &mut SearchInfo, board: &Board) {
+pub fn go(stream: &mut SplitAsciiWhitespace, info: &mut SearchInfo, board: &Board) {
     let opts = parse_go(stream);
 
     if let Ok(opts) = opts {
-        search_root(si, board, opts, false);
-        si.reset();
+        search_root(info, board, opts, false);
+        info.reset();
     }
 }
 

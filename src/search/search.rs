@@ -28,12 +28,13 @@ impl SearchInfo {
     pub fn reset(&mut self) {
         self.nodes = 0;
         self.start_timer = None;
+        self.stop_time = None;
         self.stop_flag = false;
     }
 }
 
 pub fn search(
-    si: &mut SearchInfo,
+    info: &mut SearchInfo,
     mut alpha: i16,
     beta: i16,
     board: &Board,
@@ -42,16 +43,16 @@ pub fn search(
     pv: &mut PVTable,
 ) -> i16 {
     // Every 1024 nodes, check if we should stop
-    if si.nodes % 1024 == 0 {
-        if let (Some(timer), Some(stop_time)) = (si.start_timer, si.stop_time) {
+    if info.nodes % 1024 == 0 {
+        if let (Some(timer), Some(stop_time)) = (info.start_timer, info.stop_time) {
             if timer.elapsed().as_millis() as u32 >= stop_time {
-                si.stop_flag = true;
+                info.stop_flag = true;
             }
         }
     }
 
     // Always let depth 1 finish!
-    if si.stop_flag && ply > 0 {
+    if info.stop_flag && ply > 0 {
         return 0;
     }
 
@@ -74,11 +75,10 @@ pub fn search(
     for mv in moves {
         let mut new_board = board.clone();
         new_board.play_unchecked(mv);
-        si.nodes += 1;
+        info.nodes += 1;
 
-        // Negamax
         let score = -search(
-            si,
+            info,
             -beta,
             -alpha,
             &new_board,
@@ -108,7 +108,7 @@ pub fn search(
     best_score
 }
 
-pub fn search_root(si: &mut SearchInfo, board: &Board, option: SearchOptions, frc: bool) {
+pub fn search_root(info: &mut SearchInfo, board: &Board, option: SearchOptions, frc: bool) {
     let mut pv = PVTable::new();
     let mut best_move: Option<Move> = None;
     let info_timer = Instant::now();
@@ -116,24 +116,24 @@ pub fn search_root(si: &mut SearchInfo, board: &Board, option: SearchOptions, fr
     let depth = match option {
         SearchOptions::Depth(depth) => depth,
         SearchOptions::Time(_, _, _, _, _) => {
-            si.start_timer = Some(Instant::now());
-            si.stop_time = Some(timeman(option, board));
+            info.start_timer = Some(Instant::now());
+            info.stop_time = Some(timeman(option, board));
             MAX_PLY
         }
         SearchOptions::Movetime(t) => {
-            si.start_timer = Some(Instant::now());
-            si.stop_time = Some(t);
+            info.start_timer = Some(Instant::now());
+            info.stop_time = Some(t);
             MAX_PLY
         }
         SearchOptions::Infinite | SearchOptions::Nodes(_) => MAX_PLY,
     };
 
     for d in 1..=depth {
-        let score = search(si, -INFINITY, INFINITY, board, d, 0, &mut pv);
+        let score = search(info, -INFINITY, INFINITY, board, d, 0, &mut pv);
 
         // Always clear at least depth 1
         // otherwise we might not have a best move
-        if si.stop_flag && d > 1 {
+        if info.stop_flag && d > 1 {
             break;
         }
 
@@ -142,8 +142,8 @@ pub fn search_root(si: &mut SearchInfo, board: &Board, option: SearchOptions, fr
             "info depth {} score cp {} nodes {} nps {} time {} pv {}",
             d,
             score,
-            si.nodes,
-            si.nodes / (elapsed / 1000).max(1),
+            info.nodes,
+            info.nodes / (elapsed / 1000).max(1),
             elapsed,
             pv.to_string(board, frc)
         );
@@ -151,7 +151,7 @@ pub fn search_root(si: &mut SearchInfo, board: &Board, option: SearchOptions, fr
         best_move = pv.table[0];
 
         if let SearchOptions::Nodes(n) = option {
-            if si.nodes >= n {
+            if info.nodes >= n {
                 break;
             }
         }
