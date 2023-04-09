@@ -20,9 +20,8 @@ pub fn eval(board: &Board) -> i16 {
 
 #[cfg(test)]
 mod test {
-    use cozy_chess::Board;
-
     use super::eval;
+    use cozy_chess::Board;
 
     #[test]
     fn eval_sanity() {

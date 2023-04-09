@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn move2string() {
-        let tests: [(Move, &str); 7] = [
+        let tests: [(Move, &str); 9] = [
             ("e1h1".parse().unwrap(), "e1g1"),
             ("e1a1".parse().unwrap(), "e1c1"),
             ("e1g1".parse().unwrap(), "e1g1"),
@@ -106,6 +106,8 @@ mod tests {
             ("e1e2".parse().unwrap(), "e1e2"),
             ("e2e4".parse().unwrap(), "e2e4"),
             ("d8d2".parse().unwrap(), "d8d2"),
+            ("a7a8q".parse().unwrap(), "a7a8q"),
+            ("b7b8r".parse().unwrap(), "b7b8r"),
         ];
 
         let board: Board = "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1".parse().unwrap();
