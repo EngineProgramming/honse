@@ -4,13 +4,10 @@ mod search;
 mod uci;
 
 fn main() -> io::Result<()> {
-    std::env::args().nth(1).map_or_else(
-        || (),
-        |arg| match arg.as_str() {
-            "bench" => crate::uci::bench::bench(),
-            _ => (),
-        },
-    );
+    if std::env::args().nth(1).as_deref() == Some("bench") {
+        crate::uci::bench::bench();
+        return Ok(());
+    }
 
     let mut input = String::new();
     std::io::stdin().read_line(&mut input)?;
