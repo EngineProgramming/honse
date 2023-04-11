@@ -76,5 +76,8 @@ pub fn bench() {
         time += elapsed;
     }
 
-    println!("nodes {nodes} nps {}", nodes as u128 / (time / 1000).max(1));
+    println!(
+        "Bench: {time} ms {nodes} nodes {} nps",
+        nodes as u128 / (time / 1000).max(1)
+    );
 }
