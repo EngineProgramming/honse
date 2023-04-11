@@ -1,8 +1,8 @@
-EXE     = Honse
+EXE = Honse
 ifeq ($(OS),Windows_NT)
-	NAME := $(EXE).exe
+    NAME := $(EXE).exe
 else
-	NAME := $(EXE)
+    NAME := $(EXE)
 endif
 
 rule:
