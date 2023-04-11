@@ -4,6 +4,14 @@ mod search;
 mod uci;
 
 fn main() -> io::Result<()> {
+    std::env::args().nth(1).map_or_else(
+        || (),
+        |arg| match arg.as_str() {
+            "bench" => crate::uci::bench::bench(),
+            _ => (),
+        },
+    );
+
     let mut input = String::new();
     std::io::stdin().read_line(&mut input)?;
 
