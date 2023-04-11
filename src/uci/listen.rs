@@ -1,12 +1,13 @@
 use crate::{
     search::search::SearchInfo,
-    uci::{go, perft, position, split, ucinewgame},
+    uci::{go, options, perft, position, split, ucinewgame},
 };
 use cozy_chess::Board;
 
 pub fn listen() {
     println!("id name Honse");
     println!("id author EPD");
+    options::print_options();
     println!("uciok");
 
     let mut board = Board::default();

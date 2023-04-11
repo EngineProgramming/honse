@@ -9,7 +9,7 @@ use cozy_chess::{Board, Move};
 use std::time::Instant;
 
 pub struct SearchInfo {
-    nodes: u64,
+    pub nodes: u64,
     start_timer: Option<Instant>,
     stop_time: Option<u32>,
     stop_flag: bool,
