@@ -184,7 +184,7 @@ mod tests {
 
     #[test]
     fn mate_in_1() {
-        let tests: [(&str, &str); 3] = [
+        const TESTS: [(&str, &str); 3] = [
             (
                 "4r2k/1p3rbp/2p1N1p1/p3n3/P2NB1nq/1P6/4R1P1/B1Q2RK1 b - - 4 32",
                 "h4h2",
@@ -199,7 +199,7 @@ mod tests {
             ),
         ];
 
-        for (fen, mv) in tests {
+        for (fen, mv) in TESTS.iter() {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -220,12 +220,12 @@ mod tests {
 
     #[test]
     fn mated_in_1() {
-        let tests: [(&str, &str); 2] = [
+        const TESTS: [(&str, &str); 2] = [
             ("8/8/8/8/8/1k6/4r3/K7 w - - 0 1", "a1b1"),
             ("k7/1pR4R/8/Q7/8/8/8/7K b - - 0 1", "a8b8"),
         ];
 
-        for (fen, mv) in tests {
+        for (fen, mv) in TESTS.iter() {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn mate_in_2() {
-        let tests: [(&str, &str); 3] = [
+        const TESTS: [(&str, &str); 3] = [
             (
                 "4r3/1pp2rbk/6pn/4n3/P3BN1q/1PB2bPP/8/2Q1RRK1 b - - 0 31",
                 "h4g3",
@@ -261,7 +261,7 @@ mod tests {
             ),
         ];
 
-        for (fen, mv) in tests {
+        for (fen, mv) in TESTS.iter() {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -282,7 +282,7 @@ mod tests {
 
     #[test]
     fn mated_in_2() {
-        let tests: [(&str, &str); 2] = [
+        const TESTS: [(&str, &str); 2] = [
             (
                 "r1bq1bkr/ppp3pp/2n5/3Qp3/2B5/8/PPPP1PPP/RNB1K2R b KQ - 0 8",
                 "d8d5",
@@ -293,7 +293,7 @@ mod tests {
             ),
         ];
 
-        for (fen, mv) in tests {
+        for (fen, mv) in TESTS.iter() {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -314,12 +314,12 @@ mod tests {
 
     #[test]
     fn draw_50mr() {
-        let tests: [&str; 2] = [
+        const TESTS: [&str; 2] = [
             "7k/6n1/8/8/8/8/1N6/K7 w - - 99 6969",
             "nnn5/n1nn4/nnnn4/n1n5/7k/8/7K/8 w - - 99 6969",
         ];
 
-        for fen in tests {
+        for fen in TESTS.iter() {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
