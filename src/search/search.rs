@@ -71,7 +71,7 @@ pub fn search(
 
     match board.status() {
         GameStatus::Won => return mated_in(ply),
-        GameStatus::Drawn => return draw_score(info.nodes),
+        GameStatus::Drawn => return draw_score(),
         _ => (),
     }
 
@@ -166,8 +166,8 @@ pub fn search_root(info: &mut SearchInfo, board: &Board, option: SearchOptions, 
     println!("bestmove {}", best_move.unwrap());
 }
 
-fn draw_score(nodes: u64) -> i16 {
-    8 - (nodes & 7) as i16 // We try to add some variance to draw scores
+fn draw_score() -> i16 {
+    0
 }
 
 fn mated_in(ply: u8) -> i16 {
