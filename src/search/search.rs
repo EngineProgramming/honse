@@ -199,7 +199,7 @@ mod tests {
             ),
         ];
 
-        for (b, m) in tests {
+        for (fen, mv) in tests {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -207,14 +207,14 @@ mod tests {
                 &mut info,
                 -INFINITY,
                 INFINITY,
-                &b.parse().unwrap(),
+                &fen.parse().unwrap(),
                 3,
                 0,
                 &mut pv,
             );
 
             assert_eq!(score, mate_in(1));
-            assert_eq!(pv.table[0], Some(m.parse().unwrap()));
+            assert_eq!(pv.table[0], Some(mv.parse().unwrap()));
         }
     }
 
@@ -225,7 +225,7 @@ mod tests {
             ("k7/1pR4R/8/Q7/8/8/8/7K b - - 0 1", "a8b8"),
         ];
 
-        for (b, m) in tests {
+        for (fen, mv) in tests {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -233,14 +233,14 @@ mod tests {
                 &mut info,
                 -INFINITY,
                 INFINITY,
-                &b.parse().unwrap(),
+                &fen.parse().unwrap(),
                 3,
                 0,
                 &mut pv,
             );
 
             assert_eq!(score, mated_in(2));
-            assert_eq!(pv.table[0], Some(m.parse().unwrap()));
+            assert_eq!(pv.table[0], Some(mv.parse().unwrap()));
         }
     }
 
@@ -261,7 +261,7 @@ mod tests {
             ),
         ];
 
-        for (b, m) in tests {
+        for (fen, mv) in tests {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -269,14 +269,14 @@ mod tests {
                 &mut info,
                 -INFINITY,
                 INFINITY,
-                &b.parse().unwrap(),
+                &fen.parse().unwrap(),
                 5,
                 0,
                 &mut pv,
             );
 
             assert_eq!(score, mate_in(3));
-            assert_eq!(pv.table[0], Some(m.parse().unwrap()));
+            assert_eq!(pv.table[0], Some(mv.parse().unwrap()));
         }
     }
 
@@ -293,7 +293,7 @@ mod tests {
             ),
         ];
 
-        for (b, m) in tests {
+        for (fen, mv) in tests {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -301,14 +301,14 @@ mod tests {
                 &mut info,
                 -INFINITY,
                 INFINITY,
-                &b.parse().unwrap(),
+                &fen.parse().unwrap(),
                 5,
                 0,
                 &mut pv,
             );
 
             assert_eq!(score, mated_in(4));
-            assert_eq!(pv.table[0], Some(m.parse().unwrap()));
+            assert_eq!(pv.table[0], Some(mv.parse().unwrap()));
         }
     }
 
@@ -319,7 +319,7 @@ mod tests {
             "nnn5/n1nn4/nnnn4/n1n5/7k/8/7K/8 w - - 99 6969",
         ];
 
-        for b in tests {
+        for fen in tests {
             let mut info = SearchInfo::new();
             let mut pv = PVTable::new();
 
@@ -327,7 +327,7 @@ mod tests {
                 &mut info,
                 -INFINITY,
                 INFINITY,
-                &b.parse().unwrap(),
+                &fen.parse().unwrap(),
                 5,
                 0,
                 &mut pv,
