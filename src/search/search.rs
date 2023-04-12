@@ -1,11 +1,11 @@
 use super::{
-    definitions::{INFINITY, MAX_PLY},
+    definitions::{INFINITY, MATE, MAX_PLY},
     eval::eval,
     options::SearchOptions,
     pv_table::PVTable,
 };
 use crate::{chess::move_gen, search::timeman::timeman};
-use cozy_chess::{Board, Move};
+use cozy_chess::{Board, GameStatus, Move};
 use std::time::Instant;
 
 pub struct SearchInfo {
@@ -67,6 +67,12 @@ pub fn search(
 
     if depth == 0 {
         return eval(board);
+    }
+
+    match board.status() {
+        GameStatus::Won => return mated_in(ply),
+        GameStatus::Drawn => return draw_score(info.nodes),
+        _ => (),
     }
 
     let mut best_score = -INFINITY;
@@ -158,4 +164,57 @@ pub fn search_root(info: &mut SearchInfo, board: &Board, option: SearchOptions, 
     }
 
     println!("bestmove {}", best_move.unwrap());
+}
+
+fn draw_score(nodes: u64) -> i16 {
+    8 - (nodes & 7) as i16 // We try to add some variance to draw scores
+}
+
+fn mated_in(ply: u8) -> i16 {
+    ply as i16 - MATE
+}
+
+fn mate_in(ply: u8) -> i16 {
+    MATE - ply as i16
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn mate_in_1() {
+        let tests: [(&str, Move); 3] = [
+            (
+                "4r2k/1p3rbp/2p1N1p1/p3n3/P2NB1nq/1P6/4R1P1/B1Q2RK1 b - - 4 32",
+                "h4h2".parse().unwrap(),
+            ),
+            (
+                "4rb2/3qrk2/1p1p1n2/7p/P2P4/4R2P/1BQN1P2/1K4R1 w - - 3 39",
+                "c2g6".parse().unwrap(),
+            ),
+            (
+                "r1bqkbnr/pp2pp1p/3p2p1/2p5/3nP3/2N3PP/PPP1NP2/R1BQKB1R b KQkq - 1 6",
+                "d4f3".parse().unwrap(),
+            ),
+        ];
+
+        for (b, m) in tests {
+            let mut info = SearchInfo::new();
+            let mut pv = PVTable::new();
+
+            let score = search(
+                &mut info,
+                -INFINITY,
+                INFINITY,
+                &b.parse().unwrap(),
+                4,
+                0,
+                &mut pv,
+            );
+
+            assert_eq!(score, mate_in(1));
+            assert_eq!(pv.table[0], Some(m));
+        }
+    }
 }
