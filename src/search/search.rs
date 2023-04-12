@@ -171,7 +171,7 @@ fn draw_score() -> i16 {
 }
 
 fn mated_in(ply: u8) -> i16 {
-    ply as i16 - MATE
+    -MATE + ply as i16
 }
 
 fn mate_in(ply: u8) -> i16 {
