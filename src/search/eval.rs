@@ -1,20 +1,36 @@
-use cozy_chess::{Board, Color, Piece};
-const PIECE_VALUES: [i16; 6] = [100, 320, 330, 500, 900, 0];
+use super::evaluation::psts::*;
+use cozy_chess::{Board, Color};
+use once_cell::sync::Lazy;
 
+pub const PHASE_VALUES: [i32; 6] = [0, 1, 1, 2, 4, 0];
+static PST: Lazy<PieceSquareTable> = Lazy::new(PieceSquareTable::new);
+
+#[must_use]
 pub fn eval(board: &Board) -> i16 {
-    let mut score = 0;
+    let mut mg = 0;
+    let mut eg = 0;
+    let mut game_phase = 0;
 
-    for piece in Piece::ALL {
-        score +=
-            PIECE_VALUES[piece as usize] * board.colored_pieces(Color::White, piece).len() as i16;
+    for square in board.occupied() {
+        let piece = board.piece_on(square).unwrap() as usize;
+        let color = board.color_on(square).unwrap() as usize;
+        let sq = square as usize;
 
-        score -=
-            PIECE_VALUES[piece as usize] * board.colored_pieces(Color::Black, piece).len() as i16;
+        game_phase += PHASE_VALUES[piece];
+
+        // PST contains material value.
+        mg += PST.mg_pst[color + piece * 2][sq];
+        eg += PST.eg_pst[color + piece * 2][sq];
     }
 
+    let mg_weight = game_phase.min(24);
+    let eg_weight = 24 - mg_weight;
+
+    let score = ((mg * mg_weight) + (eg * eg_weight)) / 24;
+
     match board.side_to_move() {
-        Color::White => score,
-        Color::Black => -score,
+        Color::White => score as i16,
+        Color::Black => -score as i16,
     }
 }
 
